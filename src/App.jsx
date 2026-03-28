@@ -9,12 +9,13 @@ import FAQ from './components/FAQ'
 import Register from './components/Register'
 import Footer from './components/Footer'
 import CustomCursor from './components/CustomCursor'
-import { ShootingStars, FloatingOrbs, Aurora, GridLines } from './components/Background'
+import { StaticStars, ShootingStars, FloatingOrbs, Aurora, GridLines } from './components/Background'
 
 function App() {
   return (
     <div className="app-container">
       {/* ── Global Background Layers (fixed, behind everything) ── */}
+      <StaticStars />
       <Aurora />
       <FloatingOrbs />
       <GridLines />

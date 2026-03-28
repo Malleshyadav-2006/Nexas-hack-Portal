@@ -199,5 +199,78 @@ const GridLines = () => (
   }} />
 )
 
+/* ─── Static Twinkling Stars ─── */
+const StaticStars = () => {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    let raf
+
+    const resize = () => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+
+    let stars = []
+    const initStars = () => {
+      stars = []
+      // High star density for aesthetic night sky look
+      const numStars = Math.floor((window.innerWidth * window.innerHeight) / 1800)
+      for(let i=0; i<numStars; i++) {
+        stars.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          r: Math.random() * 1.0 + 0.3,
+          o: Math.random() * 0.8 + 0.1,
+          twinkleSpeed: Math.random() * 0.02 + 0.005,
+          twinkleDir: Math.random() > 0.5 ? 1 : -1
+        })
+      }
+    }
+
+    const drawStars = () => {
+      ctx.clearRect(0,0, canvas.width, canvas.height)
+      stars.forEach(s => {
+        // Twinkle logic
+        s.o += s.twinkleSpeed * s.twinkleDir
+        if(s.o > 0.8) { s.twinkleDir = -1; s.o = 0.8; }
+        else if(s.o < 0.1) { s.twinkleDir = 1; s.o = 0.1; }
+
+        ctx.beginPath()
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2)
+        ctx.fillStyle = `rgba(255, 255, 255, ${s.o})`
+        ctx.fill()
+      })
+      raf = requestAnimationFrame(drawStars)
+    }
+
+    resize()
+    initStars()
+    drawStars()
+
+    const handleResize = () => { resize(); initStars(); }
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+
+  return (
+    <canvas 
+      ref={canvasRef} 
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: -1,
+        pointerEvents: 'none'
+      }} 
+    />
+  )
+}
+
 /* ─── Main Background component ─── */
-export { ShootingStars, FloatingOrbs, Aurora, GridLines, UNSTOP_URL }
+export { StaticStars, ShootingStars, FloatingOrbs, Aurora, GridLines, UNSTOP_URL }
